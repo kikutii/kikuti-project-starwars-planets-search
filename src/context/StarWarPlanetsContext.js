@@ -22,7 +22,7 @@ export function StarWarPlanetsProvider({ children }) {
   return (
     <StarWarPlanetsContext.Provider value={ context }>
       {
-        filteredData.length ? children : <Loading />
+        data.length ? children : <Loading />
       }
     </StarWarPlanetsContext.Provider>
   );
