@@ -15,13 +15,15 @@ export default function Filters() {
 
   const [filtersSelected, setFiltersSelected] = useState(initialState);
 
-  const columns = [
+  const initialStateColumn = [
     'population',
     'orbital_period',
     'diameter',
     'rotation_period',
     'surface_water',
   ];
+
+  const [columns, setColumns] = useState(initialStateColumn);
 
   const operators = [
     'maior que',
@@ -44,6 +46,9 @@ export default function Filters() {
   };
 
   const handleFilter = () => {
+    setColumns(columns.filter((column) => (
+      column !== filtersSelected.column
+    )));
     setFilters((prevState) => (
       {
         ...prevState,
@@ -52,6 +57,9 @@ export default function Filters() {
         ],
       }
     ));
+    // pega o value do primeiro item do select column
+    const firstColumn = document.getElementById('column')[0].value;
+    setFiltersSelected((prevState) => ({ ...prevState, column: firstColumn }));
   };
 
   return (
@@ -77,7 +85,7 @@ export default function Filters() {
           >
             {
               columns.map((column) => (
-                <option key={ column } value={ filtersSelected[column] }>{column}</option>
+                <option key={ column } value={ column }>{column}</option>
               ))
             }
           </select>
@@ -93,7 +101,7 @@ export default function Filters() {
               operators.map((operator) => (
                 <option
                   key={ operator }
-                  value={ filtersSelected[operator] }
+                  value={ operator }
                 >
                   {operator}
                 </option>
