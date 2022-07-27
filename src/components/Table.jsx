@@ -1,9 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import TableRow from './TableRow';
 import { StarWarPlanetsContext } from '../context/StarWarPlanetsContext';
 
 export default function Table() {
-  const { data } = React.useContext(StarWarPlanetsContext);
+  const {
+    data,
+    filteredData,
+    setFilteredData,
+    filters,
+  } = React.useContext(StarWarPlanetsContext);
+
+  useEffect(() => {
+    if (filters.filterByName) {
+      const newFilteredData = data.filter((planet) => (
+        planet.name.includes(filters.filterByName)
+      ));
+      return setFilteredData(newFilteredData);
+    }
+    // se o filterByName estiver vazio ele reseta o filtro
+    setFilteredData(data);
+  }, [filters.filterByName]);
+
   return (
     <table>
       <tbody>
@@ -23,7 +40,7 @@ export default function Table() {
           <th>URL</th>
         </tr>
         {
-          data.map((planet) => (
+          filteredData.map((planet) => (
             <TableRow key={ planet.url } planet={ planet } />
           ))
         }
