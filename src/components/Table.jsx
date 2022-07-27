@@ -7,19 +7,43 @@ export default function Table() {
     data,
     filteredData,
     setFilteredData,
-    filters,
+    filters: { filterByName, filterByNumericValues },
   } = React.useContext(StarWarPlanetsContext);
 
   useEffect(() => {
-    if (filters.filterByName) {
+    if (filterByName) {
       const newFilteredData = data.filter((planet) => (
-        planet.name.includes(filters.filterByName)
+        planet.name.includes(filterByName)
       ));
       return setFilteredData(newFilteredData);
     }
     // se o filterByName estiver vazio ele reseta o filtro
     setFilteredData(data);
-  }, [filters.filterByName]);
+  }, [filterByName]);
+
+  useEffect(() => {
+    if (filterByNumericValues.length > 1) {
+      const {
+        column,
+        comparison,
+        value,
+      } = filterByNumericValues[filterByNumericValues.length - 1];
+
+      const newFilteredData = (
+        filteredData.filter((planet) => {
+          if (comparison === 'maior que') {
+            console.log(comparison, column, value);
+            return Number(planet[column]) > Number(value);
+          }
+          if (comparison === 'menor que') {
+            return Number(planet[column]) < Number(value);
+          }
+          return Number(planet[column]) === Number(value);
+        })
+      );
+      setFilteredData(newFilteredData);
+    }
+  }, [filterByNumericValues]);
 
   return (
     <table>
