@@ -1,24 +1,124 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { StarWarPlanetsContext } from '../context/StarWarPlanetsContext';
 
 export default function Filters() {
-  const { filters, setFilters } = useContext(StarWarPlanetsContext);
+  const {
+    filters: { filterByName },
+    setFilters,
+  } = useContext(StarWarPlanetsContext);
 
-  const handleChange = ({ target: { value } }) => {
-    setFilters((prevState) => ({ ...prevState, filterByName: value }));
+  const initialState = {
+    column: 'population',
+    comparison: 'maior que',
+    value: '0',
+  };
+
+  const [filtersSelected, setFiltersSelected] = useState(initialState);
+
+  const columns = [
+    'population',
+    'orbital_period',
+    'diameter',
+    'rotation_period',
+    'surface_water',
+  ];
+
+  const operators = [
+    'maior que',
+    'menor que',
+    'igual a',
+  ];
+
+  // apenas monitora pra mim os filtros selecionados
+  useEffect(() => {
+    console.log(filtersSelected);
+  }, [filtersSelected]);
+
+  const handleChange = ({ target: { id, value } }) => {
+    if (id === 'search') {
+      console.log(id, value);
+      setFilters((prevState) => ({ ...prevState, filterByName: value }));
+    } else {
+      setFiltersSelected((prevState) => ({ ...prevState, [id]: value }));
+    }
+  };
+
+  const handleFilter = () => {
+    setFilters((prevState) => (
+      {
+        ...prevState,
+        filterByNumericValues: [
+          ...prevState.filterByNumericValues, filtersSelected,
+        ],
+      }
+    ));
   };
 
   return (
-    <label htmlFor="filterSearch">
-      Projeto Star Wars - Trybe
-      <br />
-      <input
-        id="filterSearch"
-        type="text"
-        data-testid="name-filter"
-        value={ filters.filterByName }
-        onChange={ handleChange }
-      />
-    </label>
+    <header>
+      <label htmlFor="search">
+        Projeto Star Wars - Trybe
+        <br />
+        <input
+          id="search"
+          type="text"
+          data-testid="name-filter"
+          value={ filterByName }
+          onChange={ handleChange }
+        />
+      </label>
+      <section>
+        <label htmlFor="column">
+          Column
+          <select
+            id="column"
+            data-testid="column-filter"
+            onChange={ handleChange }
+          >
+            {
+              columns.map((column) => (
+                <option key={ column } value={ filtersSelected[column] }>{column}</option>
+              ))
+            }
+          </select>
+        </label>
+        <label htmlFor="comparison">
+          Operator
+          <select
+            id="comparison"
+            data-testid="comparison-filter"
+            onChange={ handleChange }
+          >
+            {
+              operators.map((operator) => (
+                <option
+                  key={ operator }
+                  value={ filtersSelected[operator] }
+                >
+                  {operator}
+                </option>
+              ))
+            }
+          </select>
+        </label>
+        <label htmlFor="value">
+          Number
+          <input
+            id="value"
+            type="number"
+            value={ filtersSelected.value }
+            data-testid="value-filter"
+            onChange={ handleChange }
+          />
+        </label>
+        <button
+          type="button"
+          data-testid="button-filter"
+          onClick={ handleFilter }
+        >
+          FILTER
+        </button>
+      </section>
+    </header>
   );
 }
