@@ -11,19 +11,30 @@ export function StarWarPlanetsProvider({ children }) {
   const [data, filteredData, setFilteredData] = useData();
   const [filters, setFilters] = useFilters();
 
+  const initialStateColumn = [
+    'population',
+    'orbital_period',
+    'diameter',
+    'rotation_period',
+    'surface_water',
+  ];
+
+  const [columns, setColumns] = React.useState(initialStateColumn);
+
   const context = {
     data,
     filteredData,
     filters,
+    columns,
     setFilters,
     setFilteredData,
+    setColumns,
+    initialStateColumn,
   };
 
   return (
     <StarWarPlanetsContext.Provider value={ context }>
-      {
-        data.length ? children : <Loading />
-      }
+      { data.length ? children : <Loading />}
     </StarWarPlanetsContext.Provider>
   );
 }
