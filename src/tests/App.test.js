@@ -1,9 +1,17 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
 import App from '../App';
+import { render, screen } from '@testing-library/react';
 
-test('I am your test', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/Hello, App!/i);
-  expect(linkElement).toBeInTheDocument();
+describe('Verifica se os elementos são renderizados', () => {
+  beforeEach(() => {
+    render(<App />);
+  })
+
+  test('Verifica se a tabela é renderizada', async () => {
+    expect(await screen.findByTestId('table')).toBeInTheDocument();
+  });
+
+  test('Verifica se os filtros são renderizados', async () => {
+    expect(await screen.findByTestId('filters')).toBeInTheDocument();
+  });
 });
