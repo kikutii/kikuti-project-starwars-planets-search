@@ -3,13 +3,7 @@ import { useState } from 'react';
 export default function useFilters() {
   const [filters, setFilters] = useState({
     filterByName: '',
-    filterByNumericValues: [
-      {
-        column: '',
-        comparison: '',
-        value: '',
-      },
-    ],
+    filterByNumericValues: [],
   });
 
   return [filters, setFilters];
