@@ -17,9 +17,10 @@ export default function TableRow({ planet }) {
     edited,
     url,
   } = planet;
+
   return (
-    <tr>
-      <td>{name}</td>
+    <tr data-testid="planet">
+      <td data-testid="planet-name">{name}</td>
       <td>{rotationPeriod}</td>
       <td>{orbitalPeriod}</td>
       <td>{diameter}</td>
