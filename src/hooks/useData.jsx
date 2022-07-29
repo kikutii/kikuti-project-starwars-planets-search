@@ -7,7 +7,8 @@ export default function useData() {
 
   useEffect(() => {
     if (data.length) {
-      return setFilteredData(data);
+      const magicNumber = -1;
+      return setFilteredData(data.sort((a, b) => (a.name > b.name ? 1 : magicNumber)));
     }
     const fetchData = async () => {
       setData(await fetchPlanets());
