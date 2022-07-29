@@ -21,32 +21,38 @@ export default function Table() {
     setFilteredData(data);
   }, [filterByName]);
 
-  useEffect(() => {
-    if (filterByNumericValues.length > 1) {
-      const {
-        column,
-        comparison,
-        value,
-      } = filterByNumericValues[filterByNumericValues.length - 1];
+  // agradecimentos ao marcelo de lima
+  // me ajudou a arrumar um bug que não estava conseguindo arrumar :)
+  // https://github.com/Maarceloo
+  const filtro = (filter, newFilteredData) => {
+    const { column, comparison, value } = filter;
+    return (
+      newFilteredData.filter((planet) => {
+        if (comparison === 'maior que') {
+          return Number(planet[column]) > Number(value);
+        }
+        if (comparison === 'menor que') {
+          return Number(planet[column]) < Number(value);
+        }
+        return Number(planet[column]) === Number(value);
+      })
+    );
+  };
 
-      const newFilteredData = (
-        filteredData.filter((planet) => {
-          if (comparison === 'maior que') {
-            console.log(comparison, column, value);
-            return Number(planet[column]) > Number(value);
-          }
-          if (comparison === 'menor que') {
-            return Number(planet[column]) < Number(value);
-          }
-          return Number(planet[column]) === Number(value);
-        })
-      );
+  useEffect(() => {
+    if (filterByNumericValues.length) {
+      let newFilteredData = data;
+      filterByNumericValues.forEach((filter) => {
+        newFilteredData = filtro(filter, newFilteredData);
+      });
       setFilteredData(newFilteredData);
+    } else {
+      setFilteredData(data);
     }
   }, [filterByNumericValues]);
 
   return (
-    <table>
+    <table data-testid="table">
       <tbody>
         <tr>
           <th>Name</th>
