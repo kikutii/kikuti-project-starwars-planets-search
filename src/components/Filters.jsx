@@ -1,10 +1,14 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { StarWarPlanetsContext } from '../context/StarWarPlanetsContext';
+import ButtonRemoveFilter from './ButtonRemoveFilter';
 
 export default function Filters() {
   const {
-    filters: { filterByName },
+    filters: { filterByName, filterByNumericValues },
     setFilters,
+    columns,
+    setColumns,
+    initialStateColumn,
   } = useContext(StarWarPlanetsContext);
 
   const initialState = {
@@ -15,30 +19,14 @@ export default function Filters() {
 
   const [filtersSelected, setFiltersSelected] = useState(initialState);
 
-  const initialStateColumn = [
-    'population',
-    'orbital_period',
-    'diameter',
-    'rotation_period',
-    'surface_water',
-  ];
-
-  const [columns, setColumns] = useState(initialStateColumn);
-
   const operators = [
     'maior que',
     'menor que',
     'igual a',
   ];
 
-  // apenas monitora pra mim os filtros selecionados
-  useEffect(() => {
-    console.log(filtersSelected);
-  }, [filtersSelected]);
-
   const handleChange = ({ target: { id, value } }) => {
     if (id === 'search') {
-      console.log(id, value);
       setFilters((prevState) => ({ ...prevState, filterByName: value }));
     } else {
       setFiltersSelected((prevState) => ({ ...prevState, [id]: value }));
@@ -46,24 +34,38 @@ export default function Filters() {
   };
 
   const handleFilter = () => {
-    setColumns(columns.filter((column) => (
-      column !== filtersSelected.column
-    )));
-    setFilters((prevState) => (
-      {
-        ...prevState,
-        filterByNumericValues: [
-          ...prevState.filterByNumericValues, filtersSelected,
-        ],
-      }
-    ));
-    // pega o value do primeiro item do select column
-    const firstColumn = document.getElementById('column')[0].value;
-    setFiltersSelected((prevState) => ({ ...prevState, column: firstColumn }));
+    if (filtersSelected.column) {
+      setColumns(columns.filter((column) => (
+        column !== filtersSelected.column
+      )));
+      setFilters((prevState) => (
+        {
+          ...prevState,
+          filterByNumericValues: [
+            ...prevState.filterByNumericValues, filtersSelected,
+          ],
+        }
+      ));
+    }
+  };
+
+  useEffect(() => {
+    if (columns[0]) {
+      setFiltersSelected((prevState) => (
+        { ...prevState, column: columns[0] }
+      ));
+    } else {
+      setFiltersSelected((prevState) => ({ ...prevState, column: '' }));
+    }
+  }, [columns]);
+
+  const handleRemoveAllFilters = () => {
+    setColumns(initialStateColumn);
+    setFilters((prevState) => ({ ...prevState, filterByNumericValues: [] }));
   };
 
   return (
-    <header>
+    <header data-testid="filters">
       <label htmlFor="search">
         Projeto Star Wars - Trybe
         <br />
@@ -127,6 +129,24 @@ export default function Filters() {
           FILTER
         </button>
       </section>
+
+      {
+        filterByNumericValues.map(({ column, comparison, value }) => (
+          <ButtonRemoveFilter
+            key={ column }
+            column={ column }
+            comparison={ comparison }
+            value={ value }
+          />
+        ))
+      }
+      <button
+        type="button"
+        onClick={ handleRemoveAllFilters }
+        data-testid="button-remove-filters"
+      >
+        Remove All Filters
+      </button>
     </header>
   );
 }
