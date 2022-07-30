@@ -21,14 +21,24 @@ export function StarWarPlanetsProvider({ children }) {
 
   const [columns, setColumns] = React.useState(initialStateColumn);
 
+  const initialState = {
+    column: 'population',
+    comparison: 'maior que',
+    value: '0',
+  };
+
+  const [filtersSelected, setFiltersSelected] = React.useState(initialState);
+
   const context = {
     data,
     filteredData,
     filters,
     columns,
+    filtersSelected,
     setFilters,
     setFilteredData,
     setColumns,
+    setFiltersSelected,
     initialStateColumn,
   };
 
