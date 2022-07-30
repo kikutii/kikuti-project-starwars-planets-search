@@ -1,23 +1,19 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { StarWarPlanetsContext } from '../context/StarWarPlanetsContext';
 import ButtonRemoveFilter from './ButtonRemoveFilter';
 
 export default function Filters() {
   const {
-    filters: { filterByName, filterByNumericValues },
+    filters: { filterByName, filterByNumericValues, order },
+    data,
+    filtersSelected,
+    setFiltersSelected,
+    setFilteredData,
     setFilters,
     columns,
     setColumns,
     initialStateColumn,
   } = useContext(StarWarPlanetsContext);
-
-  const initialState = {
-    column: 'population',
-    comparison: 'maior que',
-    value: '0',
-  };
-
-  const [filtersSelected, setFiltersSelected] = useState(initialState);
 
   const operators = [
     'maior que',
@@ -26,6 +22,11 @@ export default function Filters() {
   ];
 
   const handleChange = ({ target: { id, value } }) => {
+    if (id === 'order' || value === 'ASC' || value === 'DESC') {
+      setFilters((prevState) => (
+        { ...prevState, order: { ...prevState.order, [id]: value } }
+      ));
+    }
     if (id === 'search') {
       setFilters((prevState) => ({ ...prevState, filterByName: value }));
     } else {
@@ -62,6 +63,22 @@ export default function Filters() {
   const handleRemoveAllFilters = () => {
     setColumns(initialStateColumn);
     setFilters((prevState) => ({ ...prevState, filterByNumericValues: [] }));
+  };
+
+  const handleOrder = () => {
+    const withoutUnknown = data.filter((planet) => planet[order.order] !== 'unknown');
+    let sortedPlanets = [];
+    if (order.sort === 'ASC') {
+      sortedPlanets = withoutUnknown.sort((planetA, planetB) => (
+        planetA[order.order] - planetB[order.order]
+      ));
+      console.log(sortedPlanets);
+    } else {
+      sortedPlanets = withoutUnknown.sort((planetA, planetB) => (
+        planetB[order.order] - planetA[order.order]
+      ));
+    }
+    setFilteredData([...sortedPlanets]);
   };
 
   return (
@@ -146,6 +163,50 @@ export default function Filters() {
         data-testid="button-remove-filters"
       >
         Remove All Filters
+      </button>
+      <label htmlFor="order">
+        Order
+        <select
+          id="order"
+          data-testid="column-sort"
+          onChange={ handleChange }
+        >
+          {
+            columns.map((column) => (
+              <option key={ column } value={ column }>{column}</option>
+            ))
+          }
+        </select>
+      </label>
+      <label htmlFor="sort">
+        Ascending
+        <input
+          id="sort"
+          name="radio"
+          type="radio"
+          data-testid="column-sort-input-asc"
+          value="ASC"
+          onChange={ handleChange }
+        />
+      </label>
+      <label htmlFor="sort">
+        Descending
+        <input
+          id="sort"
+          name="radio"
+          type="radio"
+          data-testid="column-sort-input-desc"
+          value="DESC"
+          onChange={ handleChange }
+        />
+      </label>
+      <button
+        type="button"
+        data-testid="column-sort-button"
+        onClick={ handleOrder }
+      >
+        ORDER
+
       </button>
     </header>
   );
