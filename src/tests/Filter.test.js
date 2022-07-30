@@ -161,6 +161,22 @@ describe('Testa o componente de Filtros', () => {
     expect(await screen.findAllByTestId('planet')).toHaveLength(10);
   })
 
+  test('Verifica a ordenação', async () => {
+    const orderInput = await screen.findByTestId('column-sort');
+    const ascInput = await screen.findByTestId('column-sort-input-asc');
+    const descInput = await screen.findByTestId('column-sort-input-desc');
+    const sortButton = await screen.findByTestId('column-sort-button');
+    expect(orderInput).toHaveProperty('value', 'population')
+    userEvent.selectOptions(orderInput, 'orbital_period');
+    expect(orderInput).toHaveProperty('value', 'orbital_period')
+    userEvent.selectOptions(orderInput, 'population');
+    expect(orderInput).toHaveProperty('value', 'population')
+    userEvent.click(ascInput);
+    userEvent.click(sortButton);
+    userEvent.click(descInput);
+    userEvent.click(sortButton);
+  })
+
   test('Verifica a tabela inicial', async () => {
     const planetNames = await screen.findAllByTestId('planet-name');
     expect(planetNames[0].innerHTML).toBe(mockPlanets.results[0].name)
